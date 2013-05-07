@@ -1,0 +1,23 @@
+<?xml version ="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_marginTop="3dp"
+        android:id="@+id/tv_webKey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        style="@style/WebTextTitleValue"
+        android:text="key"/>
+     <TextView
+         android:id="@+id/tv_webValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="3dp"
+        style="@style/TextValue"
+        android:text="value"/>
+
+</LinearLayout>

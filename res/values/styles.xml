@@ -1,0 +1,45 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="TextParent">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="TextKey" parent="@style/TextParent">
+        <item name="android:textColor">@color/shop_info_text_left</item>
+        <item name="android:gravity">left|top</item>
+    </style>
+
+    <style name="TextValue" parent="@style/TextParent">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:gravity">left</item>
+    </style>
+    
+     <style name="TextResult">
+        <item name="android:textSize">13sp</item>
+         <item name="android:textColor">@color/gray</item>
+          <item name="android:gravity">left</item>
+    </style>
+    <style name="WebTextTitleValue" >
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+</resources>

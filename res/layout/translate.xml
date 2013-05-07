@@ -1,0 +1,144 @@
+<?xml version ="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+   
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".TranslateActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/edt_text"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="60"
+            android:textSize="19sp" />
+
+        <Button
+            android:id="@+id/btn_tran"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
+            android:text="翻译" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/Textview_horizontal_margin"
+                android:orientation="horizontal" >
+
+                <TextView
+                    style="@style/TextKey"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.7"
+                    android:text="查询：" />
+
+                <TextView
+                    android:id="@+id/tv_query"
+                    style="@style/TextValue"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/Textview_horizontal_margin"
+                android:orientation="horizontal" >
+
+                <TextView
+                    style="@style/TextKey"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.7"
+                    android:text="翻译：" />
+
+                <TextView
+                    android:id="@+id/tv_result"
+                    style="@style/TextValue"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/Textview_horizontal_margin"
+                android:orientation="horizontal" >
+
+                <TextView
+                    style="@style/TextKey"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.7"
+                    android:text="解释：" />
+
+                <LinearLayout
+                  
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:orientation="vertical" >
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/ll_explains"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/Textview_left_margin"
+                    android:orientation="vertical" >
+                </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/Textview_horizontal_margin"
+                android:orientation="horizontal" >
+
+                <TextView
+                    style="@style/TextKey"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.7"
+                    android:text="网络：" />
+
+                <LinearLayout
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7" >
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_webexplains"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Textview_left_margin"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
