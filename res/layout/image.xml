@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="6"
@@ -19,7 +19,16 @@
                 android:id="@+id/imgv_forrecog"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/img_rotate"
+                android:layout_width="40dip"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="15dp"
+                android:background="@drawable/selector_rotate" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,7 +49,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/alpha_black"
-        
         android:visibility="gone" >
 
         <LinearLayout

@@ -12,6 +12,7 @@ import com.example.myocr.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,7 +47,7 @@ public class PhotographActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Window window = getWindow();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+		
 		window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -89,7 +90,11 @@ public class PhotographActivity extends Activity {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		if(getRequestedOrientation()!=ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+			  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			 }
 		super.onResume();
+		
 		Log.i(TAG, "==onResume==");
 		SurfaceHolder holder = sv_camara.getHolder();
 		holder.addCallback(new SurfaceHolder.Callback() {

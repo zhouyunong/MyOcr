@@ -25,6 +25,7 @@ public class RecognisedActivity extends Activity {
 	private Button btn_translate;
 	private Handler handler;
 	private TranslateResult translateResult;
+	private String translatedResultString;
 	private Intent uperIntent;
 
 	@Override
@@ -39,7 +40,7 @@ public class RecognisedActivity extends Activity {
 		uperIntent = getIntent();
 		String recogResult = uperIntent.getStringExtra("recogresult");
 		edt_recognise.setText(recogResult);
-		translateEditText();
+		//translateEditText();
 		// Hack:handler拉出去写
 		handler = new MyHandler();
 
@@ -65,8 +66,9 @@ public class RecognisedActivity extends Activity {
 				String recogniseString = edt_recognise.getText().toString();
 				// TODO Auto-generated method stub
 				try {
-					translateResult = TranslateUtil
+				translateResult = TranslateUtil
 							.translateJson(recogniseString);
+					//translatedResult = TranslateUtil.translateParagraph(recogniseString);
 					Message msg = new Message();
 					msg.what = TRANSLATE_SUCCESS;
 					handler.sendMessage(msg);
@@ -92,8 +94,8 @@ public class RecognisedActivity extends Activity {
 			switch (msg.what) {
 			case TRANSLATE_SUCCESS:
 				if (!translateResult.equals(null)) {
-					String tranlateResult = translateResult.getTranslation();
-					edt_translated.setText(tranlateResult);
+					translatedResultString = translateResult.getTranslation();
+					edt_translated.setText(translatedResultString);
 					edt_translated.setVisibility(View.VISIBLE);
 		 		edt_translated.invalidate();
 				}

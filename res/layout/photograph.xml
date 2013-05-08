@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
     <SurfaceView
         android:id="@+id/sv_camara"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="9" />
+        android:layout_height="match_parent" />
 
-   <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="2"
-        android:orientation="horizontal" >
+        android:layout_height="60dip"
+        android:layout_alignParentBottom="true"
+       >
 
         <Button
             android:id="@+id/btn_takephoto"
-            android:layout_width="0dip"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2" 
-            android:text="点击拍照"/>
-       
+            android:text="点击拍照" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -100,5 +100,21 @@ public class TranslateUtil {
 			throws Exception {
 		return translateQuery("json", forTranslate);
 	}
+	
+	
+	public static String translateParagraph(String paragraph) throws Exception{
+		paragraph.replaceAll("\n", " ");
+		Log.i("paragraph", paragraph);
+		String[] sentences = paragraph.split("\\.", 10);
+		StringBuilder translatedSentences = new StringBuilder();
+		for (int i = 0; i < sentences.length; i++) {
+			String stringResult =translateJson(sentences[i]).getTranslation();
+			Log.i("stringResult", stringResult);
+			translatedSentences.append(stringResult+"。");
+		}
+		return translatedSentences.toString();
+	}
+	
+	
 
 }

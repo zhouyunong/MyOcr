@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,12 +17,14 @@ import android.os.Message;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class ImageDisplayActivity extends Activity {
 	private ImageView img_forrecog;
+	private ImageButton img_rotate;
 	private Button btn_recog;
 	private Bitmap bitmap;
 	private RelativeLayout relative_wait;
@@ -39,6 +42,7 @@ public class ImageDisplayActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.image);
 		img_forrecog = (ImageView) findViewById(R.id.imgv_forrecog);
+		img_rotate = (ImageButton)findViewById(R.id.img_rotate);
 		btn_recog = (Button) findViewById(R.id.btn_recognise);
 		relative_wait = (RelativeLayout)findViewById(R.id.relative_waiting);
 		ocrFinishHandler = new OcrFinishHandler();
@@ -75,6 +79,20 @@ public class ImageDisplayActivity extends Activity {
 
 				
 
+			}
+		});
+		
+		
+		img_rotate.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Matrix matrix = new Matrix();
+				matrix.setRotate(90);
+				bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+				img_forrecog.setImageBitmap(bitmap);
+				img_forrecog.invalidate();
 			}
 		});
 
