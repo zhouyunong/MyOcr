@@ -10,15 +10,89 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dip"
-        android:layout_alignParentBottom="true"
-       >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btn_takephoto"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="点击拍照" />
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:background="@color/alpha_black_bg" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="@color/alpha_black_bg" >
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llayout_word_area"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="10" >
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="@color/alpha_black_bg" >
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="5"
+            android:background="@color/alpha_black_bg"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_recognised_word"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_marginTop="10dip"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:text="My"
+                android:textColor="@color/blue"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/tv_translated_word"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_marginTop="10dip"
+                android:layout_weight="6"
+                android:gravity="center"
+                android:text="我的"
+                android:textColor="@color/white"
+                android:textSize="25sp" />
+
+            <ImageView
+                android:id="@+id/img_scanned"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_marginTop="10dip"
+                android:layout_weight="4"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btn_takephoto"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="3"
+                android:background="@color/red_alpha"
+                android:text="拍照试试" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

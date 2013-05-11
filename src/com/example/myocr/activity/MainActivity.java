@@ -87,24 +87,7 @@ public class MainActivity extends Activity {
 									startActivityForResult(intent2,
 											RESULT_CAMERA_IMAGE);
 
-									// if
-									// (Environment.getExternalStorageState().equals(Environment.MEDIA_REMOVED))
-									// {
-									// Toast.makeText(MainActivity.this,
-									// "SD卡不可用,请安装后重试",
-									// Toast.LENGTH_SHORT).show();
-									//
-									// }else {
-									//
-									// File file = new
-									// File(Environment.getExternalStorageDirectory(),
-									// "forocr.jpg");
-									// Uri outputFile = Uri.fromFile(file);
-									// intent2.putExtra(MediaStore.EXTRA_OUTPUT,outputFile);
-									// startActivityForResult(intent2,
-									// RESULT_CAMERA_IMAGE);
-									// }
-
+									
 									break;
 
 								}

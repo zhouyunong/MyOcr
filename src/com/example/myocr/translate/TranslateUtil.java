@@ -39,58 +39,66 @@ public class TranslateUtil {
 			byte[] data = StreamUtil.readInputStream(is);
 			String json = new String(data);
 			Log.i("zhou", json);
-			JSONObject jsonResult = new JSONObject(json);
 
-			result.setErrorCode(jsonResult.getInt("errorCode"));
+			try {
 
-			if (result.getErrorCode() == 0) {
-				if (!jsonResult.isNull("translation")) {
-					result.setTranslation(jsonResult
-							.getJSONArray("translation").getString(0));
-				}
-				if (!jsonResult.isNull("basic")) {
-					Basic basic = new Basic();
-					JSONObject jsonBasic = jsonResult.getJSONObject("basic");
-					if (!jsonBasic.isNull("explains")) {
-						JSONArray explainArray = jsonBasic
-								.getJSONArray("explains");
-						ArrayList<String> explains = new ArrayList<String>();
-						for (int i = 0; i < explainArray.length(); i++) {
-							explains.add(explainArray.getString(i));
+				JSONObject jsonResult = new JSONObject(json);
 
-							basic.setExplains(explains);
+				result.setErrorCode(jsonResult.getInt("errorCode"));
+
+				if (result.getErrorCode() == 0) {
+					if (!jsonResult.isNull("translation")) {
+						result.setTranslation(jsonResult.getJSONArray(
+								"translation").getString(0));
+					}
+					if (!jsonResult.isNull("basic")) {
+						Basic basic = new Basic();
+						JSONObject jsonBasic = jsonResult
+								.getJSONObject("basic");
+						if (!jsonBasic.isNull("explains")) {
+							JSONArray explainArray = jsonBasic
+									.getJSONArray("explains");
+							ArrayList<String> explains = new ArrayList<String>();
+							for (int i = 0; i < explainArray.length(); i++) {
+								explains.add(explainArray.getString(i));
+
+								basic.setExplains(explains);
+							}
 						}
-					}
-					if (!jsonBasic.isNull("phonetic")) {
-						basic.setPhonetic(jsonBasic.getString("phonetic"));
-					}
-
-					result.setBasicExplain(basic);
-				}
-
-				if (!jsonResult.isNull("web")) {
-					ArrayList<WebTranslation> webTranslations = new ArrayList<WebTranslation>();
-
-					JSONArray webTranArray = jsonResult.getJSONArray("web");
-
-					for (int i = 0; i < webTranArray.length(); i++) {
-						JSONObject jsonObject = webTranArray.getJSONObject(i);
-						WebTranslation webTranslation = new WebTranslation();
-						webTranslation.setKey(jsonObject.getString("key"));
-						JSONArray jsonArray = jsonObject.getJSONArray("value");
-						ArrayList<String> webExplainList = new ArrayList<String>();
-						for (int j = 0; j < jsonArray.length(); j++) {
-							webExplainList.add(jsonArray.getString(j));
+						if (!jsonBasic.isNull("phonetic")) {
+							basic.setPhonetic(jsonBasic.getString("phonetic"));
 						}
-						webTranslation.setValues(webExplainList);
-						webTranslations.add(webTranslation);
+
+						result.setBasicExplain(basic);
 					}
 
-					result.setWebTranslation(webTranslations);
-				}
+					if (!jsonResult.isNull("web")) {
+						ArrayList<WebTranslation> webTranslations = new ArrayList<WebTranslation>();
 
+						JSONArray webTranArray = jsonResult.getJSONArray("web");
+
+						for (int i = 0; i < webTranArray.length(); i++) {
+							JSONObject jsonObject = webTranArray
+									.getJSONObject(i);
+							WebTranslation webTranslation = new WebTranslation();
+							webTranslation.setKey(jsonObject.getString("key"));
+							JSONArray jsonArray = jsonObject
+									.getJSONArray("value");
+							ArrayList<String> webExplainList = new ArrayList<String>();
+							for (int j = 0; j < jsonArray.length(); j++) {
+								webExplainList.add(jsonArray.getString(j));
+							}
+							webTranslation.setValues(webExplainList);
+							webTranslations.add(webTranslation);
+						}
+
+						result.setWebTranslation(webTranslations);
+					}
+
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
-
 		}
 
 		return result;
@@ -100,21 +108,21 @@ public class TranslateUtil {
 			throws Exception {
 		return translateQuery("json", forTranslate);
 	}
-	
-	
-	public static String translateParagraph(String paragraph) throws Exception{
+
+	public static String translateParagraph(String paragraph) throws Exception {
 		paragraph.replaceAll("\n", " ");
 		Log.i("paragraph", paragraph);
 		String[] sentences = paragraph.split("\\.", 10);
 		StringBuilder translatedSentences = new StringBuilder();
 		for (int i = 0; i < sentences.length; i++) {
-			String stringResult =translateJson(sentences[i]).getTranslation();
-			Log.i("stringResult", stringResult);
-			translatedSentences.append(stringResult+"。");
+			String stringResult = translateJson(sentences[i]).getTranslation();
+			if (stringResult!=null) {
+				Log.i("stringResult", stringResult+" ");
+				translatedSentences.append(stringResult + "。");
+			}
+			
 		}
 		return translatedSentences.toString();
 	}
-	
-	
 
 }

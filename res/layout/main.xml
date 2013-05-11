@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="6"
-        android:background="@color/gray" >
+        android:background="@color/darkwhite" >
 
         <ImageView
             android:layout_width="match_parent"
@@ -39,6 +39,7 @@
             android:id="@+id/btn_text_from_image"
             android:layout_width="match_parent"
             android:layout_height="50dip"
+             android:textSize="@dimen/Button_TextSize"
             android:text="文本图片识别" />
     </LinearLayout>
 

@@ -15,4 +15,6 @@
        <color name="note_btn_text_color">#666666</color>
        <color name="about_textcolor">#3b6688</color>
        <color name="shop_info_text_left">#3b6688</color>
+       <color name="alpha_black_bg">#22000000</color>
+        <color name="darkwhite">#f5f0f0</color>
 </resources>
