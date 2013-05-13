@@ -33,6 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dip"
             android:text="摄像头取词"
+            style="@style/btn_style"
+            android:layout_margin="2dip"
             android:textSize="@dimen/Button_TextSize" />
 
         <Button
@@ -40,6 +42,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dip"
              android:textSize="@dimen/Button_TextSize"
+             android:layout_margin="2dip"
+             style="@style/btn_style"
             android:text="文本图片识别" />
     </LinearLayout>
 

@@ -85,7 +85,8 @@
                 <Button
                     android:id="@+id/btn_translate"
                     android:layout_width="match_parent"
-                    android:layout_height="50dip"
+                    android:layout_height="40dip"
+                    style="@style/btn_style"
                     android:text="翻译" />
             </LinearLayout>
         </LinearLayout>

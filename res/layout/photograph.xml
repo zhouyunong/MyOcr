@@ -23,7 +23,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
-            android:layout_weight="1"
+            android:layout_weight="0.7"
             android:orientation="horizontal" >
 
             <LinearLayout
@@ -53,7 +53,8 @@
             android:layout_height="0dip"
             android:layout_weight="5"
             android:background="@color/alpha_black_bg"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="30dip" >
 
             <TextView
                 android:id="@+id/tv_recognised_word"
@@ -63,7 +64,7 @@
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="My"
-                android:textColor="@color/blue"
+                android:textColor="@color/sky_blue"
                 android:textSize="30sp" />
 
             <TextView
@@ -73,25 +74,32 @@
                 android:layout_marginTop="10dip"
                 android:layout_weight="6"
                 android:gravity="center"
-                android:text="我的"
                 android:textColor="@color/white"
                 android:textSize="25sp" />
+        </LinearLayout>
 
-            <ImageView
-                android:id="@+id/img_scanned"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_marginTop="10dip"
-                android:layout_weight="4"
-                android:gravity="center" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btn_takephoto"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_weight="3"
-                android:background="@color/red_alpha"
-                android:text="拍照试试" />
+               android:id="@+id/btn_word_details"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:background="@drawable/selector_btn_background"
+                android:layout_margin="2dip"
+                android:text="单词详细" />
+           <Button
+               android:id="@+id/btn_lock_word"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:background="@drawable/selector_btn_background"
+                android:layout_margin="2dip"
+                android:text="锁定单词" />
         </LinearLayout>
     </LinearLayout>
 

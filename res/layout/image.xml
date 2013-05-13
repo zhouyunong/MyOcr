@@ -13,12 +13,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="6"
-            android:background="@color/gray" >
+            android:background="@color/alpha_black_bg" >
 
             <ImageView
                 android:id="@+id/imgv_forrecog"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"     
+               />
 
             <ImageButton
                 android:id="@+id/img_rotate"
@@ -40,6 +41,7 @@
                 android:id="@+id/btn_recognise"
                 android:layout_width="match_parent"
                 android:layout_height="60dip"
+                style="@style/btn_style"
                 android:text="开始识别" />
         </LinearLayout>
     </LinearLayout>

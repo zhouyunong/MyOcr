@@ -7,61 +7,59 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
-
 import com.example.myocr.R;
-import com.example.myocr.R.layout;
+import com.example.myocr.recognise.OcrUtil;
+import com.example.myocr.translate.Basic;
+import com.example.myocr.translate.TranslateResult;
+import com.example.myocr.translate.TranslateUtil;
+import com.zjgsu.ocr.OCR;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.hardware.Camera.Size;
 
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnDrawListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PhotographActivity extends Activity {
 	private final String TAG = "PhotographActivity";
+	private final int ON_RECOG_FINISHED = 0;
+	private final int ON_TRANSLATE_FINISHED = 1;
+
 	private SurfaceView sv_camara;
-	private Button btn_takePhoto;
+	private Button btn_lock_word ; 
+	private Button btn_word_detail ;
 	private TextView tv_recognised_word;
 	private TextView tv_translated_word;
-	private ImageView img_scanned;
 	private boolean hasSurface;// SurfaceView是否已经创建完成
 	private CameraManager cameraManager;
 	private LinearLayout llayout_word_area;// 单词所在的区域
@@ -73,6 +71,13 @@ public class PhotographActivity extends Activity {
 	private int word_area_width;// word区域的宽度
 	private int sv_area_height;// surfaceView的高度
 	private int sv_area_width;// surfaceView的宽度
+	private WordScanTask wordScanTask;
+	private AutoFocusCallback autoFocusCallback;
+	private UiHandler uiHandler;
+	private OCR myOcrUtil = new OCR();
+	private AutoFocusThread autoFocusThread ; 
+	private boolean isThreadWaiting = false ;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +93,13 @@ public class PhotographActivity extends Activity {
 		sv_camara = (SurfaceView) findViewById(R.id.sv_camara);
 		tv_recognised_word = (TextView) findViewById(R.id.tv_recognised_word);
 		tv_translated_word = (TextView) findViewById(R.id.tv_translated_word);
-		img_scanned = (ImageView) findViewById(R.id.img_scanned);
+		btn_lock_word = (Button)findViewById(R.id.btn_lock_word);
+		btn_word_detail = (Button)findViewById(R.id.btn_word_details);
+		autoFocusThread = new AutoFocusThread();
+		
+		
 		llayout_word_area = (LinearLayout) findViewById(R.id.llayout_word_area);
-
+		uiHandler = new UiHandler();
 		ViewTreeObserver vto_sv_camera = sv_camara.getViewTreeObserver();
 		vto_sv_camera.addOnPreDrawListener(new OnPreDrawListener() {
 
@@ -100,11 +109,9 @@ public class PhotographActivity extends Activity {
 				if (!surface_area_hasMessured) {
 					sv_camara.getLocationInWindow(sv_area_location);
 					// llayout_word_area.getLocationInWindow(word_area_location);
-					Toast.makeText(
-							PhotographActivity.this,
-							word_area_location[0] + "  "
-									+ word_area_location[1], Toast.LENGTH_LONG)
-							.show();
+					Toast.makeText(PhotographActivity.this,
+							sv_area_location[0] + "  " + sv_area_location[1],
+							Toast.LENGTH_LONG).show();
 					sv_area_height = sv_camara.getMeasuredHeight();
 					sv_area_width = sv_camara.getMeasuredWidth();
 					surface_area_hasMessured = true;
@@ -113,6 +120,27 @@ public class PhotographActivity extends Activity {
 			}
 		});
 
+		
+		btn_lock_word.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (!isThreadWaiting) {
+					autoFocusThread.hangupThread();
+					isThreadWaiting = true;
+				}
+				else {
+					autoFocusThread.resumeThread();
+					isThreadWaiting = false ;
+				}
+			}
+		});
+		
+		
+		
+		
+		
 		// 在onCreate方法中获取控件位置等信息的方法
 		ViewTreeObserver vto_graph = llayout_word_area.getViewTreeObserver();
 		vto_graph.addOnPreDrawListener(new OnPreDrawListener() {
@@ -132,110 +160,33 @@ public class PhotographActivity extends Activity {
 					word_area_width = llayout_word_area.getMeasuredWidth();
 					word_area_hasMessured = true;
 				}
+
 				return true;
 			}
 		});
 		// 结束
 
-		btn_takePhoto = (Button) findViewById(R.id.btn_takephoto);
+		autoFocusCallback = new AutoFocusCallback() {
 
-		btn_takePhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onAutoFocus(boolean success, Camera camera) {
 				// TODO Auto-generated method stub
-				cameraManager.requestAutoFocus();
-				llayout_word_area.getLocationInWindow(word_area_location);
-				Toast.makeText(PhotographActivity.this,
-						word_area_location[0] + "  " + word_area_location[1],
-						Toast.LENGTH_LONG).show();
+				if (success)// success表示对焦成功
+				{
+					Log.i("tag", "myAutoFocusCallback: success...");
+					cameraManager.camera
+							.setOneShotPreviewCallback(new MyPreviewCallBackHandler());
 
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} else {
+					// 未对焦成功
+
+					Log.i("tag", "myAutoFocusCallback: 失败了...");
+
+					// 这里也可以加上myCamera.autoFocus(myAutoFocusCallback)，如果聚焦失败就再次启动聚焦。
+
 				}
-
-				cameraManager.takePicture(null, null, new PictureCallback() {
-
-					@Override
-					public void onPictureTaken(byte[] data, Camera camera) {
-						// TODO Auto-generated method stub
-						int[] pixels = new int[100 * 100];// the size of the
-															// array is the
-															// dimensions of the
-															// sub-photo
-						ByteArrayOutputStream bos = new ByteArrayOutputStream();
-						Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0,
-								data.length);
-						Matrix matrix = new Matrix();
-						matrix.postRotate((float) 90.0);
-						bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-								bitmap.getWidth(), bitmap.getHeight(), matrix,
-								false);
-						bitmap = Bitmap.createScaledBitmap(bitmap,
-								sv_area_width, sv_area_height, false);
-						bitmap = Bitmap.createBitmap(bitmap,
-								word_area_location[0], word_area_location[1],
-								word_area_width, word_area_height);
-						
-						
-						
-						
-						
-						
-						
-						
-						long dataTake = System.currentTimeMillis();
-						File img_file = new File(Environment
-								.getExternalStorageDirectory()
-								+ "/takedphoto"
-								+ dataTake + ".jpg");
-						if (!img_file.exists()) {
-							try {
-								// 按照指定的路径创建文件夹
-								img_file.createNewFile();
-							} catch (Exception e) {
-								// TODO: handle exception
-							}
-						}
-						Log.i("img_path", img_file.getAbsolutePath() + "执行了呀");
-						try {
-							OutputStream outputStream = new FileOutputStream(
-									img_file);
-							BufferedOutputStream bs = new BufferedOutputStream(
-									outputStream);
-							bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-							bs.flush();
-							bs.close();
-
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO: handle exception
-							e.printStackTrace();
-						}
-
-					}
-				});
-
-				// File file = new
-				// File(Environment.getExternalStorageDirectory(),
-				// "mmy.jpg");
-				// Log.i("img_path", file.getAbsolutePath());
-				// try {
-				// OutputStream outputStream = new FileOutputStream(file);
-				// Log.i("img_path", file.getAbsolutePath() + "执行了呀");
-				// cameraManager.requestPreviewFrame(outputStream);
-				// // cameraManager.requestPreviewFrame(outputStream);
-				// } catch (FileNotFoundException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-
 			}
-		});
+		};
 
 	}
 
@@ -259,6 +210,11 @@ public class PhotographActivity extends Activity {
 				if (!hasSurface) {
 					hasSurface = true;
 					initCamera(holder);// 创建完成后立即进行预览
+					if (autoFocusThread!=null) {
+						autoFocusThread.start();
+					}
+				
+					// cameraManager.camera.autoFocus(autoFocusCallback);
 					Log.i(TAG, "===begin preview===");
 
 				}
@@ -300,6 +256,7 @@ public class PhotographActivity extends Activity {
 			cameraManager.openDriver(surfaceHolder);// 打开照相机
 
 			cameraManager.startPreview();// 进行预览
+			// new OcrThread().start();
 		} catch (IOException e) {
 			// TODO: handle exception
 			Log.i(TAG, e.toString());
@@ -349,53 +306,23 @@ public class PhotographActivity extends Activity {
 			}
 		}
 
-		public void requestPreviewFrame(final OutputStream stream) {
-			if (camera != null && preview) {
-				camera.setPreviewCallback(new Camera.PreviewCallback() {
-
-					@Override
-					public void onPreviewFrame(byte[] data, Camera camera) {
-						// TODO Auto-generated method stub
-						camera.setPreviewCallback(null);
-						System.out.println(data);
-						/*
-						 * Bitmap bitmap = BitmapFactory.decodeByteArray(data,
-						 * 0, data.length);
-						 */
-						// Convert to JPG
-						Size previewSize = camera.getParameters()
-								.getPreviewSize();
-						YuvImage yuvimage = new YuvImage(data,
-								ImageFormat.YUY2, previewSize.width,
-								previewSize.height, null);
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						yuvimage.compressToJpeg(new Rect(0, 0,
-								previewSize.width, previewSize.height), 100,
-								baos);
-
-						byte[] jdata = baos.toByteArray();
-
-						// Convert to Bitmap
-						Bitmap bitmap = BitmapFactory.decodeByteArray(jdata, 0,
-								jdata.length);
-
-						try {
-							bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-									stream);
-							stream.flush();
-							stream.close();
-						} catch (Exception e) {
-							Log.e(TAG, e.toString());
-						}
-
-					}
-				});
-			}
-		}
+		// public void requestPreviewFrame(final OutputStream stream) {
+		// if (camera != null && preview) {
+		// camera.setOneShotPreviewCallback(new Camera.PreviewCallback() {
+		//
+		// @Override
+		// public void onPreviewFrame(byte[] data, Camera camera) {
+		// // TODO Auto-generated method stub
+		//
+		//
+		// }
+		// });
+		// }
+		// }
 
 		public void requestAutoFocus() {
 			if (camera != null && preview) {
-				camera.autoFocus(null);
+				camera.autoFocus(autoFocusCallback);
 			}
 		}
 
@@ -403,7 +330,11 @@ public class PhotographActivity extends Activity {
 			Point mScreenResolution = getScreenResolution();
 			Camera.Parameters parameters = camera.getParameters();
 			parameters.setPreviewSize(mScreenResolution.x, mScreenResolution.y);
-			parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+			parameters.setPictureFormat(PixelFormat.JPEG);
+			parameters.setPictureSize(sv_area_height, sv_area_width);
+			Log.i("sv_height", sv_area_height + "   " + sv_area_width);
+			parameters
+					.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 			// camera.setParameters(parameters);
 		}
 
@@ -463,16 +394,274 @@ public class PhotographActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
+
 		super.onDestroy();
 
 	}
 
-	class OcrThread extends Thread{
-		public OcrThread() {
+	class MyPictureCallback implements PictureCallback {
+
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
+			// TODO Auto-generated method stub
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+			Matrix matrix = new Matrix();
+			matrix.postRotate((float) 90.0);
+			bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+					bitmap.getHeight(), matrix, false);
+			bitmap = Bitmap.createScaledBitmap(bitmap, sv_area_width,
+					sv_area_height, false);
+			bitmap = Bitmap.createBitmap(bitmap, word_area_location[0],
+					word_area_location[1], word_area_width, word_area_height);
+
+			long dataTake = System.currentTimeMillis();
+			File img_file = new File(Environment.getExternalStorageDirectory()
+					+ "/takedphoto" + dataTake + ".jpg");
+			if (!img_file.exists()) {
+				try {
+					// 按照指定的路径创建文件夹
+					img_file.createNewFile();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			Log.i("img_path", img_file.getAbsolutePath() + "执行了呀");
+			try {
+				OutputStream outputStream = new FileOutputStream(img_file);
+				BufferedOutputStream bs = new BufferedOutputStream(outputStream);
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+				bs.flush();
+				bs.close();
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	// class OcrThread extends Thread {
+	//
+	// public OcrThread() {
+	//
+	// }
+	//
+	// @Override
+	// public void run() {
+	// while (hasSurface) {
+	// cameraManager.requestAutoFocus();
+	// try {
+	// Thread.sleep(3000);
+	// } catch (InterruptedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// }
+
+	private class WordScanTask extends AsyncTask<Void, Void, Void> {
+		private byte[] data;
+
+		public WordScanTask(byte[] data) {
 			// TODO Auto-generated constructor stub
+			this.data = data;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			Size size = cameraManager.camera.getParameters().getPreviewSize();// 获取预览大小
+			final int preview_width = size.width;
+			final int preivew_height = size.height;
+			final YuvImage image = new YuvImage(data, ImageFormat.NV21,
+					preview_width, preivew_height, null);
+			ByteArrayOutputStream os = new ByteArrayOutputStream(data.length);
+			if (!image.compressToJpeg(new Rect(0, 0, preview_width,
+					preivew_height), 100, os)) {
+				return null;
+			}
+			byte[] tmp = os.toByteArray();
+			Bitmap bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp.length);
+
+			Matrix matrix = new Matrix();
+			matrix.postRotate((float) 90.0);
+			bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+					bitmap.getHeight(), matrix, false);
+			bitmap = Bitmap.createScaledBitmap(bitmap, sv_area_width,
+					sv_area_height, false);
+			bitmap = Bitmap.createBitmap(bitmap, word_area_location[0],
+					word_area_location[1], word_area_width, word_area_height);
+
+			String ocrString = myOcrUtil.doOcr(bitmap);
+			String ocrResult = OcrUtil.readMidWord(ocrString);
+
+			Message msg = new Message();
+			msg.what = ON_RECOG_FINISHED;
+			msg.obj = ocrResult;
+			uiHandler.sendMessage(msg);
+
+			TranslateResult translateResult = new TranslateResult();
+			try {
+				translateResult = TranslateUtil.translateJson(ocrResult);
+
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			// tv_translated_word.setText(translateResult.getTranslation());
+			Message msg_translate_finished = new Message();
+
+			msg_translate_finished.what = ON_TRANSLATE_FINISHED;
+			msg_translate_finished.obj = translateResult;
+			uiHandler.sendMessage(msg_translate_finished);
+
+			// Toast.makeText(PhotographActivity.this, ocrResut,
+			// Toast.LENGTH_SHORT).show();
+// 将获取的图片保存至储存卡
+//			long dataTake = System.currentTimeMillis();
+//			File img_file = new File(Environment.getExternalStorageDirectory()
+//					+ "/preview" + dataTake + ".jpg");
+//			if (!img_file.exists()) {
+//				try {
+//					// 按照指定的路径创建文件夹
+//					img_file.createNewFile();
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//				}
+//			}
+//			Log.i("img_path", img_file.getAbsolutePath() + "执行了呀");
+//			try {
+//				OutputStream outputStream = new FileOutputStream(img_file);
+//				BufferedOutputStream bs = new BufferedOutputStream(outputStream);
+//				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+//				bs.flush();
+//				bs.close();
+//
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO: handle exception
+//				e.printStackTrace();
+//			}
+
+			return null;
+		}
+
+	}
+
+	class MyPreviewCallBackHandler implements Camera.PreviewCallback {
+
+		@Override
+		public void onPreviewFrame(byte[] data, Camera camera) {
+			// TODO Auto-generated method stub
+			camera.setPreviewCallback(null);
+			System.out.println(data);
+
+			if (null != wordScanTask) {
+				switch (wordScanTask.getStatus()) {
+				case RUNNING:
+					return;
+				case PENDING:
+					wordScanTask.cancel(false);
+					break;
+				}
+			}
+			wordScanTask = new WordScanTask(data);
+			wordScanTask.execute((Void) null);
+		}
+
+	}
+
+	class UiHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch (msg.what) {
+			case ON_RECOG_FINISHED:
+				Toast.makeText(PhotographActivity.this, (String) msg.obj,
+						Toast.LENGTH_SHORT).show();
+				tv_recognised_word.setText((String) msg.obj);
+
+				break;
+			case ON_TRANSLATE_FINISHED:
+				// Toast.makeText(PhotographActivity.this, text, duration);
+				Basic basicExplains = ((TranslateResult) msg.obj)
+						.getBasicExplain();
+				StringBuilder builder = new StringBuilder();
+				for (String explainResult : basicExplains.getExplains()) {
+					builder.append(explainResult + "; ");
+				}
+
+				tv_translated_word.setText(builder.toString());
+
+			}
+
 		}
 	}
-	
-	
-	
+
+	class AutoFocusThread extends Thread {
+		boolean waiting = false ;
+		
+		public void hangupThread(){
+			if (!waiting) {
+				synchronized (this) {
+					this.waiting = true ;
+				}
+			}
+		}
+		
+		public void resumeThread(){
+			if (!waiting) {
+				return;
+			}
+			synchronized (this) {
+				this.waiting = false;
+				this.notifyAll();
+			}
+		}
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			// cameraManager.camera.autoFocus();
+
+			// TODO Auto-generated method stub
+			
+			try {
+				synchronized (this) {
+					if (waiting) {
+						this.wait();
+					}
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			
+			
+			while (!Thread.currentThread().isInterrupted()) {
+				cameraManager.requestAutoFocus();
+				try {
+					Thread.sleep(4500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Thread.currentThread().interrupt();
+				}
+
+			}
+		}
+	}
+
 }

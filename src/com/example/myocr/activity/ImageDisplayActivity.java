@@ -42,9 +42,9 @@ public class ImageDisplayActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.image);
 		img_forrecog = (ImageView) findViewById(R.id.imgv_forrecog);
-		img_rotate = (ImageButton)findViewById(R.id.img_rotate);
+		img_rotate = (ImageButton) findViewById(R.id.img_rotate);
 		btn_recog = (Button) findViewById(R.id.btn_recognise);
-		relative_wait = (RelativeLayout)findViewById(R.id.relative_waiting);
+		relative_wait = (RelativeLayout) findViewById(R.id.relative_waiting);
 		ocrFinishHandler = new OcrFinishHandler();
 
 		ocr = new OCR();
@@ -65,7 +65,9 @@ public class ImageDisplayActivity extends Activity {
 		// Bundle bundle = intent.getExtras();
 		// final Bitmap bitmap = (Bitmap) bundle.get("data");//
 		// 获取相机返回的数据，并转换为Bitmap图片格式
-		img_forrecog.setImageBitmap(bitmap);
+		
+			img_forrecog.setImageBitmap(bitmap);
+		
 
 		btn_recog.setOnClickListener(new View.OnClickListener() {
 
@@ -74,23 +76,21 @@ public class ImageDisplayActivity extends Activity {
 				// TODO Auto-generated method stub
 
 				relative_wait.setVisibility(View.VISIBLE);
-				//relative_wait.invalidate();
+				// relative_wait.invalidate();
 				new MyOcrThread(bitmap).start();
-
-				
 
 			}
 		});
-		
-		
+
 		img_rotate.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Matrix matrix = new Matrix();
 				matrix.setRotate(90);
-				bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+				bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+						bitmap.getHeight(), matrix, true);
 				img_forrecog.setImageBitmap(bitmap);
 				img_forrecog.invalidate();
 			}
