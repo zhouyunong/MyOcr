@@ -16,6 +16,7 @@ import com.zjgsu.ocr.OCR;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -54,10 +55,12 @@ public class PhotographActivity extends Activity {
 	private final String TAG = "PhotographActivity";
 	private final int ON_RECOG_FINISHED = 0;
 	private final int ON_TRANSLATE_FINISHED = 1;
+	public  final static int Activity_Flag = 1;
+	public static final String TRANSLATE_RESULT = "word_result" ;
 
 	private SurfaceView sv_camara;
-	private Button btn_lock_word ; 
-	private Button btn_word_detail ;
+	private Button btn_lock_word;
+	private Button btn_word_detail;
 	private TextView tv_recognised_word;
 	private TextView tv_translated_word;
 	private boolean hasSurface;// SurfaceView是否已经创建完成
@@ -75,9 +78,9 @@ public class PhotographActivity extends Activity {
 	private AutoFocusCallback autoFocusCallback;
 	private UiHandler uiHandler;
 	private OCR myOcrUtil = new OCR();
-	private AutoFocusThread autoFocusThread ; 
-	private boolean isThreadWaiting = false ;
-	
+	private AutoFocusThread autoFocusThread;
+	private boolean isThreadWaiting = false;
+	private TranslateResult translateResult_this_moment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +96,10 @@ public class PhotographActivity extends Activity {
 		sv_camara = (SurfaceView) findViewById(R.id.sv_camara);
 		tv_recognised_word = (TextView) findViewById(R.id.tv_recognised_word);
 		tv_translated_word = (TextView) findViewById(R.id.tv_translated_word);
-		btn_lock_word = (Button)findViewById(R.id.btn_lock_word);
-		btn_word_detail = (Button)findViewById(R.id.btn_word_details);
+		btn_lock_word = (Button) findViewById(R.id.btn_lock_word);
+		btn_word_detail = (Button) findViewById(R.id.btn_word_details);
 		autoFocusThread = new AutoFocusThread();
-		
-		
+
 		llayout_word_area = (LinearLayout) findViewById(R.id.llayout_word_area);
 		uiHandler = new UiHandler();
 		ViewTreeObserver vto_sv_camera = sv_camara.getViewTreeObserver();
@@ -120,27 +122,32 @@ public class PhotographActivity extends Activity {
 			}
 		});
 
-		
-		btn_lock_word.setOnClickListener(new View.OnClickListener() {
-			
+		btn_word_detail.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (!isThreadWaiting) {
-					autoFocusThread.hangupThread();
-					isThreadWaiting = true;
-				}
-				else {
-					autoFocusThread.resumeThread();
-					isThreadWaiting = false ;
+				if (translateResult_this_moment!=null) {
+					Intent intent = new Intent(PhotographActivity.this,TranslateActivity.class);
+					Bundle bundle = new Bundle();
+					bundle.putSerializable(TRANSLATE_RESULT, translateResult_this_moment);
+					intent.putExtras(bundle);
+					intent.setFlags(Activity_Flag);
+					
+					
+					startActivity(intent);
+					finish();
 				}
 			}
 		});
-		
-		
-		
-		
-		
+		btn_lock_word.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+
 		// 在onCreate方法中获取控件位置等信息的方法
 		ViewTreeObserver vto_graph = llayout_word_area.getViewTreeObserver();
 		vto_graph.addOnPreDrawListener(new OnPreDrawListener() {
@@ -192,7 +199,7 @@ public class PhotographActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-		super.onResume();
+	
 		Log.i(TAG, "==onResume==");
 
 		SurfaceHolder holder = sv_camara.getHolder();
@@ -210,10 +217,13 @@ public class PhotographActivity extends Activity {
 				if (!hasSurface) {
 					hasSurface = true;
 					initCamera(holder);// 创建完成后立即进行预览
-					if (autoFocusThread!=null) {
-						autoFocusThread.start();
+					if (autoFocusThread != null) {
+						if (!autoFocusThread.isAlive()) {
+							autoFocusThread.start();
+						}
+						
 					}
-				
+
 					// cameraManager.camera.autoFocus(autoFocusCallback);
 					Log.i(TAG, "===begin preview===");
 
@@ -233,7 +243,7 @@ public class PhotographActivity extends Activity {
 			initCamera(holder);
 			Log.i(TAG, "====onResume begin preview");
 		}
-
+		super.onResume();
 	}
 
 	@Override
@@ -246,9 +256,10 @@ public class PhotographActivity extends Activity {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
-		super.onPause();
+		
 		cameraManager.stopPreview();
 		cameraManager.closeDriver();
+		super.onPause();
 	}
 
 	private void initCamera(SurfaceHolder surfaceHolder) {
@@ -503,57 +514,61 @@ public class PhotographActivity extends Activity {
 
 			String ocrString = myOcrUtil.doOcr(bitmap);
 			String ocrResult = OcrUtil.readMidWord(ocrString);
+			
+			if (ocrResult!=null) {
+				Message msg = new Message();
+				msg.what = ON_RECOG_FINISHED;
+				msg.obj = ocrResult;
+				uiHandler.sendMessage(msg);
 
-			Message msg = new Message();
-			msg.what = ON_RECOG_FINISHED;
-			msg.obj = ocrResult;
-			uiHandler.sendMessage(msg);
+				TranslateResult translateResult = new TranslateResult();
+				try {
+					translateResult = TranslateUtil.translateJson(ocrResult);
 
-			TranslateResult translateResult = new TranslateResult();
-			try {
-				translateResult = TranslateUtil.translateJson(ocrResult);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				// tv_translated_word.setText(translateResult.getTranslation());
+				Message msg_translate_finished = new Message();
+
+				msg_translate_finished.what = ON_TRANSLATE_FINISHED;
+				msg_translate_finished.obj = translateResult;
+				uiHandler.sendMessage(msg_translate_finished);
 			}
-
-			// tv_translated_word.setText(translateResult.getTranslation());
-			Message msg_translate_finished = new Message();
-
-			msg_translate_finished.what = ON_TRANSLATE_FINISHED;
-			msg_translate_finished.obj = translateResult;
-			uiHandler.sendMessage(msg_translate_finished);
+			
 
 			// Toast.makeText(PhotographActivity.this, ocrResut,
 			// Toast.LENGTH_SHORT).show();
-// 将获取的图片保存至储存卡
-//			long dataTake = System.currentTimeMillis();
-//			File img_file = new File(Environment.getExternalStorageDirectory()
-//					+ "/preview" + dataTake + ".jpg");
-//			if (!img_file.exists()) {
-//				try {
-//					// 按照指定的路径创建文件夹
-//					img_file.createNewFile();
-//				} catch (Exception e) {
-//					// TODO: handle exception
-//				}
-//			}
-//			Log.i("img_path", img_file.getAbsolutePath() + "执行了呀");
-//			try {
-//				OutputStream outputStream = new FileOutputStream(img_file);
-//				BufferedOutputStream bs = new BufferedOutputStream(outputStream);
-//				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-//				bs.flush();
-//				bs.close();
-//
-//			} catch (FileNotFoundException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO: handle exception
-//				e.printStackTrace();
-//			}
+			// 将获取的图片保存至储存卡
+			// long dataTake = System.currentTimeMillis();
+			// File img_file = new
+			// File(Environment.getExternalStorageDirectory()
+			// + "/preview" + dataTake + ".jpg");
+			// if (!img_file.exists()) {
+			// try {
+			// // 按照指定的路径创建文件夹
+			// img_file.createNewFile();
+			// } catch (Exception e) {
+			// // TODO: handle exception
+			// }
+			// }
+			// Log.i("img_path", img_file.getAbsolutePath() + "执行了呀");
+			// try {
+			// OutputStream outputStream = new FileOutputStream(img_file);
+			// BufferedOutputStream bs = new BufferedOutputStream(outputStream);
+			// bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+			// bs.flush();
+			// bs.close();
+			//
+			// } catch (FileNotFoundException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (IOException e) {
+			// // TODO: handle exception
+			// e.printStackTrace();
+			// }
 
 			return null;
 		}
@@ -596,7 +611,8 @@ public class PhotographActivity extends Activity {
 				break;
 			case ON_TRANSLATE_FINISHED:
 				// Toast.makeText(PhotographActivity.this, text, duration);
-				Basic basicExplains = ((TranslateResult) msg.obj)
+				translateResult_this_moment = (TranslateResult) msg.obj;
+				Basic basicExplains = translateResult_this_moment
 						.getBasicExplain();
 				StringBuilder builder = new StringBuilder();
 				for (String explainResult : basicExplains.getExplains()) {
@@ -611,17 +627,17 @@ public class PhotographActivity extends Activity {
 	}
 
 	class AutoFocusThread extends Thread {
-		boolean waiting = false ;
-		
-		public void hangupThread(){
+		boolean waiting = false;
+
+		public void hangupThread() {
 			if (!waiting) {
 				synchronized (this) {
-					this.waiting = true ;
+					this.waiting = true;
 				}
 			}
 		}
-		
-		public void resumeThread(){
+
+		public void resumeThread() {
 			if (!waiting) {
 				return;
 			}
@@ -630,26 +646,24 @@ public class PhotographActivity extends Activity {
 				this.notifyAll();
 			}
 		}
-		
+
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			// cameraManager.camera.autoFocus();
 
 			// TODO Auto-generated method stub
-			
-			try {
-				synchronized (this) {
-					if (waiting) {
-						this.wait();
-					}
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			
-			
-			
+
+//			try {
+//				synchronized (this) {
+//					if (waiting) {
+//						this.wait();
+//					}
+//				}
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+
 			while (!Thread.currentThread().isInterrupted()) {
 				cameraManager.requestAutoFocus();
 				try {

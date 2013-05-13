@@ -1,6 +1,9 @@
 package com.example.myocr.activity;
 
+import java.io.File;
+
 import com.example.myocr.R;
+import com.example.myocr.recognise.ImageUtils;
 import com.example.myocr.recognise.OcrUtil;
 import com.example.myocr.translate.BitmapUtil;
 import com.zjgsu.ocr.OCR;
@@ -14,6 +17,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -27,6 +33,7 @@ public class ImageDisplayActivity extends Activity {
 	private ImageButton img_rotate;
 	private Button btn_recog;
 	private Bitmap bitmap;
+	private Bitmap bitmap_disposed;
 	private RelativeLayout relative_wait;
 	private String img_path;
 	private Intent intent;
@@ -52,7 +59,12 @@ public class ImageDisplayActivity extends Activity {
 		switch (intent.getFlags()) {
 		case MainActivity.RESULT_LOAD_IMAGE:
 			img_path = intent.getStringExtra("img_path");
-			bitmap = BitmapFactory.decodeFile(img_path);
+			BitmapFactory.Options opts = new BitmapFactory.Options();
+			opts.inSampleSize = 1;
+			File file = new File(img_path);
+			Log.i("zhou_length", file.length()+" ");
+			
+			bitmap = BitmapFactory.decodeFile(img_path, opts);
 			break;
 
 		case MainActivity.RESULT_CAMERA_IMAGE:
@@ -62,12 +74,8 @@ public class ImageDisplayActivity extends Activity {
 			break;
 
 		}
-		// Bundle bundle = intent.getExtras();
-		// final Bitmap bitmap = (Bitmap) bundle.get("data");//
-		// 获取相机返回的数据，并转换为Bitmap图片格式
-		
-			img_forrecog.setImageBitmap(bitmap);
-		
+
+		img_forrecog.setImageBitmap(bitmap);
 
 		btn_recog.setOnClickListener(new View.OnClickListener() {
 
@@ -92,9 +100,51 @@ public class ImageDisplayActivity extends Activity {
 				bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
 						bitmap.getHeight(), matrix, true);
 				img_forrecog.setImageBitmap(bitmap);
-				img_forrecog.invalidate();
+
 			}
 		});
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		menu.add(0, 0, 0, "灰度化");
+		menu.add(0, 1, 1, "二值化");
+		menu.add(0, 2, 2, "倾斜校正");
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case 0:
+			Toast.makeText(ImageDisplayActivity.this, "灰度化处理成功",
+					Toast.LENGTH_SHORT).show();
+			bitmap = ImageUtils.bitmap2Gray(bitmap);
+			img_forrecog.setImageBitmap(bitmap);
+
+			return true;
+
+		case 1:
+			Toast.makeText(ImageDisplayActivity.this, "二值化处理成功",
+					Toast.LENGTH_SHORT).show();
+			bitmap = ImageUtils.gray2Binary(bitmap);
+			img_forrecog.setImageBitmap(bitmap);
+			return true;
+		case 2:
+			Toast.makeText(ImageDisplayActivity.this, "倾斜矫正",
+					Toast.LENGTH_SHORT).show();
+			bitmap = ImageUtils.TiltCorrection(bitmap);
+			img_forrecog.setImageBitmap(bitmap);
+
+			return true;
+
+		}
+
+		return false;
 
 	}
 
@@ -104,6 +154,10 @@ public class ImageDisplayActivity extends Activity {
 		super.onDestroy();
 		if (bitmap != null) {
 			bitmap.recycle();
+		}
+
+		if (bitmap_disposed != null) {
+			bitmap_disposed.recycle();
 		}
 
 	}
@@ -139,9 +193,6 @@ public class ImageDisplayActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 
-			BitmapFactory.Options opts = new BitmapFactory.Options();
-			opts.inSampleSize = 8;
-			// 先测试不用opts建立bitmap
 			recogniseStr = ocr.doOcr(bitmap);
 			Message message = new Message();
 			message.what = ON_OCR_FINISHED;

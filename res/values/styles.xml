@@ -23,7 +23,7 @@
 
     <style name="TextKey" parent="@style/TextParent">
         <item name="android:textColor">@color/shop_info_text_left</item>
-        <item name="android:gravity">left|top</item>
+        <item name="android:gravity">right|top</item>
     </style>
 
     <style name="TextValue" parent="@style/TextParent">

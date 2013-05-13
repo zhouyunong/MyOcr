@@ -4,8 +4,8 @@
     <dimen name="activity_horizontal_margin">5dp</dimen>
     <dimen name="activity_vertical_margin">5dp</dimen>
     <dimen name="Textview_horizontal_margin">5dp</dimen>
-    <dimen name="Textview_left_margin">5dp</dimen>
     <dimen name="Button_TextSize">16sp</dimen>
-    <dimen name="image_btn_margintop">5dp</dimen>
+    <dimen name="Textview_left_margin">10dp</dimen>
+    <dimen name="image_btn_margintop">2dp</dimen>
 
 </resources>

@@ -1,8 +1,9 @@
 package com.example.myocr.translate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Basic {
+public class Basic implements Serializable {
 	private ArrayList<String> explains = new ArrayList<String>();
 	private String phonetic;
 

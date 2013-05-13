@@ -75,13 +75,14 @@
                 android:layout_weight="6"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="25sp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
+            android:background="@color/alpha_black_bg"
             android:orientation="horizontal" >
 
             <Button
@@ -89,15 +90,16 @@
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:background="@drawable/selector_btn_background"
+              
                 android:layout_margin="2dip"
+                style="@style/btn_style"
                 android:text="单词详细" />
            <Button
                android:id="@+id/btn_lock_word"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:background="@drawable/selector_btn_background"
+                  style="@style/btn_style"
                 android:layout_margin="2dip"
                 android:text="锁定单词" />
         </LinearLayout>
