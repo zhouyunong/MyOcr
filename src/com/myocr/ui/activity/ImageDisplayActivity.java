@@ -1,12 +1,12 @@
-package com.example.myocr.activity;
+package com.myocr.ui.activity;
 
 import java.io.File;
 
 import com.example.myocr.R;
-import com.example.myocr.recognise.ImageUtils;
-import com.example.myocr.recognise.OCR;
-import com.example.myocr.recognise.OcrUtil;
-import com.example.myocr.translate.BitmapUtil;
+import com.myocr.framework.imageprocessor.ImageUtils;
+import com.myocr.framework.recognise.OCR;
+import com.myocr.framework.recognise.OcrUtil;
+import com.myocr.framework.translate.BitmapUtil;
 
 import android.app.Activity;
 import android.content.Intent;

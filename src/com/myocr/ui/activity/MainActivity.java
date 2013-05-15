@@ -1,4 +1,4 @@
-package com.example.myocr.activity;
+package com.myocr.ui.activity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

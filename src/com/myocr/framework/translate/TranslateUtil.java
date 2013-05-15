@@ -1,4 +1,4 @@
-package com.example.myocr.translate;
+package com.myocr.framework.translate;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -116,13 +116,54 @@ public class TranslateUtil {
 		StringBuilder translatedSentences = new StringBuilder();
 		for (int i = 0; i < sentences.length; i++) {
 			String stringResult = translateJson(sentences[i]).getTranslation();
-			if (stringResult!=null) {
-				Log.i("stringResult", stringResult+" ");
+			if (stringResult != null) {
+				Log.i("stringResult", stringResult + " ");
 				translatedSentences.append(stringResult + "。");
 			}
-			
+
 		}
 		return translatedSentences.toString();
 	}
 
+	
+	
+	/**
+	 * 工具类：读取字符串中间的单词  edit by elvira
+	 * @param str
+	 * @return
+	 */
+	public static String readMidWord(String str) {
+		if (str == null || str.equals(""))
+			return null;
+
+		Log.i("readMidWord", "readMidWord:" + str);
+
+		try {
+			//把一些特殊字符都改为空格
+			str = str.replaceAll("[,.-]", " ");
+			int mid = str.length() / 2;
+			
+			//处理中间字符为空格的情况
+			while (str.charAt(mid) == ' ')
+				mid--;
+			
+			int begin = str.lastIndexOf(" ", mid);
+			if (begin == -1)
+				begin = 0;
+
+			int end = str.indexOf(" ", mid);
+			if (end == -1)
+				end = str.length() - 1;
+
+			String result = str.substring(begin, end);
+			return result;
+		} catch (Exception e) {
+			Log.e("readMidWord", e.getMessage());
+		}
+		return null;
+
+	}
+	
+	
+	
 }

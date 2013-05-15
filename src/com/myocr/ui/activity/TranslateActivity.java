@@ -1,9 +1,9 @@
-package com.example.myocr.activity;
+package com.myocr.ui.activity;
 
 import com.example.myocr.R;
-import com.example.myocr.translate.TranslateResult;
-import com.example.myocr.translate.TranslateUtil;
-import com.example.myocr.translate.WebTranslation;
+import com.myocr.framework.translate.TranslateResult;
+import com.myocr.framework.translate.TranslateUtil;
+import com.myocr.framework.translate.WebTranslation;
 
 import android.os.Bundle;
 import android.os.Handler;

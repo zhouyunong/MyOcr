@@ -1,4 +1,4 @@
-package com.example.myocr.recognise;
+package com.myocr.framework.recognise;
 
 import java.io.File;
 

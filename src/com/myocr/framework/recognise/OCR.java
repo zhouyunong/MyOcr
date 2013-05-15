@@ -1,30 +1,15 @@
-package com.example.myocr.recognise;
+package com.myocr.framework.recognise;
 
-import java.io.File;
 import java.io.IOException;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.googlecode.leptonica.android.Pix;
-import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class OCR{
 	private static final String TAG = "OCR..."; 
-	
 	private static final String DEFAULT_LANGUAGE = "eng";
 
 	public String doOcr(Bitmap bitmap){

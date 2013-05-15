@@ -1,4 +1,4 @@
-package com.example.myocr.translate;
+package com.myocr.framework.translate;
 
 import java.io.Serializable;
 import java.util.ArrayList;

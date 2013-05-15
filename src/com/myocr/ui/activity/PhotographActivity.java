@@ -1,4 +1,4 @@
-package com.example.myocr.activity;
+package com.myocr.ui.activity;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,11 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import com.example.myocr.R;
-import com.example.myocr.recognise.OCR;
-import com.example.myocr.recognise.OcrUtil;
-import com.example.myocr.translate.Basic;
-import com.example.myocr.translate.TranslateResult;
-import com.example.myocr.translate.TranslateUtil;
+import com.myocr.framework.recognise.OCR;
+import com.myocr.framework.recognise.OcrUtil;
+import com.myocr.framework.translate.Basic;
+import com.myocr.framework.translate.TranslateResult;
+import com.myocr.framework.translate.TranslateUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -55,11 +55,11 @@ public class PhotographActivity extends Activity {
 	private final String TAG = "PhotographActivity";
 	private final int ON_RECOG_FINISHED = 0;
 	private final int ON_TRANSLATE_FINISHED = 1;
-	public  final static int Activity_Flag = 1;
-	public static final String TRANSLATE_RESULT = "word_result" ;
+	public final static int Activity_Flag = 1;
+	public static final String TRANSLATE_RESULT = "word_result";
 
 	private SurfaceView sv_camara;
-	//private Button btn_lock_word;
+	// private Button btn_lock_word;
 	private Button btn_word_detail;
 	private TextView tv_recognised_word;
 	private TextView tv_translated_word;
@@ -79,7 +79,7 @@ public class PhotographActivity extends Activity {
 	private UiHandler uiHandler;
 	private OCR myOcrUtil = new OCR();
 	private AutoFocusThread autoFocusThread;
-	private boolean isThreadWaiting = false;
+
 	private TranslateResult translateResult_this_moment;
 
 	@Override
@@ -96,7 +96,7 @@ public class PhotographActivity extends Activity {
 		sv_camara = (SurfaceView) findViewById(R.id.sv_camara);
 		tv_recognised_word = (TextView) findViewById(R.id.tv_recognised_word);
 		tv_translated_word = (TextView) findViewById(R.id.tv_translated_word);
-	//	btn_lock_word = (Button) findViewById(R.id.btn_lock_word);
+		// btn_lock_word = (Button) findViewById(R.id.btn_lock_word);
 		btn_word_detail = (Button) findViewById(R.id.btn_word_details);
 		autoFocusThread = new AutoFocusThread();
 
@@ -111,9 +111,9 @@ public class PhotographActivity extends Activity {
 				if (!surface_area_hasMessured) {
 					sv_camara.getLocationInWindow(sv_area_location);
 					// llayout_word_area.getLocationInWindow(word_area_location);
-//					Toast.makeText(PhotographActivity.this,
-//							sv_area_location[0] + "  " + sv_area_location[1],
-//							Toast.LENGTH_LONG).show();
+					// Toast.makeText(PhotographActivity.this,
+					// sv_area_location[0] + "  " + sv_area_location[1],
+					// Toast.LENGTH_LONG).show();
 					sv_area_height = sv_camara.getMeasuredHeight();
 					sv_area_width = sv_camara.getMeasuredWidth();
 					surface_area_hasMessured = true;
@@ -127,26 +127,28 @@ public class PhotographActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (translateResult_this_moment!=null) {
-					Intent intent = new Intent(PhotographActivity.this,TranslateActivity.class);
+				if (translateResult_this_moment != null) {
+					Intent intent = new Intent(PhotographActivity.this,
+							TranslateActivity.class);
 					Bundle bundle = new Bundle();
-					bundle.putSerializable(TRANSLATE_RESULT, translateResult_this_moment);
+					bundle.putSerializable(TRANSLATE_RESULT,
+							translateResult_this_moment);
 					intent.putExtras(bundle);
 					intent.setFlags(Activity_Flag);
 					hasSurface = false;
-					
+
 					startActivity(intent);
 					finish();
 				}
 			}
 		});
-//		btn_lock_word.setOnClickListener(new View.OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				
-//			}
-//		});
+		// btn_lock_word.setOnClickListener(new View.OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		//
+		// }
+		// });
 
 		// 在onCreate方法中获取控件位置等信息的方法
 		ViewTreeObserver vto_graph = llayout_word_area.getViewTreeObserver();
@@ -158,11 +160,11 @@ public class PhotographActivity extends Activity {
 				if (!word_area_hasMessured) {
 					llayout_word_area.getLocationInWindow(word_area_location);
 					// llayout_word_area.getLocationInWindow(word_area_location);
-//					Toast.makeText(
-//							PhotographActivity.this,
-//							word_area_location[0] + "  "
-//									+ word_area_location[1], Toast.LENGTH_LONG)
-//							.show();
+					// Toast.makeText(
+					// PhotographActivity.this,
+					// word_area_location[0] + "  "
+					// + word_area_location[1], Toast.LENGTH_LONG)
+					// .show();
 					word_area_height = llayout_word_area.getMeasuredHeight();
 					word_area_width = llayout_word_area.getMeasuredWidth();
 					word_area_hasMessured = true;
@@ -199,7 +201,7 @@ public class PhotographActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-	
+
 		Log.i(TAG, "==onResume==");
 
 		SurfaceHolder holder = sv_camara.getHolder();
@@ -221,7 +223,7 @@ public class PhotographActivity extends Activity {
 						if (!autoFocusThread.isAlive()) {
 							autoFocusThread.start();
 						}
-						
+
 					}
 
 					// cameraManager.camera.autoFocus(autoFocusCallback);
@@ -256,7 +258,7 @@ public class PhotographActivity extends Activity {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
-		
+
 		cameraManager.stopPreview();
 		cameraManager.closeDriver();
 		super.onPause();
@@ -331,7 +333,7 @@ public class PhotographActivity extends Activity {
 		// }
 		// }
 
-		public synchronized void  requestAutoFocus() {
+		public synchronized void requestAutoFocus() {
 			if (camera != null && preview) {
 				camera.autoFocus(autoFocusCallback);
 			}
@@ -513,9 +515,9 @@ public class PhotographActivity extends Activity {
 					word_area_location[1], word_area_width, word_area_height);
 
 			String ocrString = myOcrUtil.doOcr(bitmap);
-			String ocrResult = OcrUtil.readMidWord(ocrString);
-			
-			if (ocrResult!=null) {
+			String ocrResult = TranslateUtil.readMidWord(ocrString);
+
+			if (ocrResult != null) {
 				Message msg = new Message();
 				msg.what = ON_RECOG_FINISHED;
 				msg.obj = ocrResult;
@@ -537,7 +539,6 @@ public class PhotographActivity extends Activity {
 				msg_translate_finished.obj = translateResult;
 				uiHandler.sendMessage(msg_translate_finished);
 			}
-			
 
 			// Toast.makeText(PhotographActivity.this, ocrResut,
 			// Toast.LENGTH_SHORT).show();
@@ -604,7 +605,7 @@ public class PhotographActivity extends Activity {
 			// TODO Auto-generated method stub
 			switch (msg.what) {
 			case ON_RECOG_FINISHED:
-				
+
 				tv_recognised_word.setText((String) msg.obj);
 
 				break;
@@ -626,7 +627,6 @@ public class PhotographActivity extends Activity {
 	}
 
 	class AutoFocusThread extends Thread {
-		
 
 		@Override
 		public void run() {
@@ -635,17 +635,17 @@ public class PhotographActivity extends Activity {
 
 			// TODO Auto-generated method stub
 
-//			try {
-//				synchronized (this) {
-//					if (waiting) {
-//						this.wait();
-//					}
-//				}
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
+			// try {
+			// synchronized (this) {
+			// if (waiting) {
+			// this.wait();
+			// }
+			// }
+			// } catch (Exception e) {
+			// // TODO: handle exception
+			// }
 
-			while ((!Thread.currentThread().isInterrupted())&&hasSurface) {
+			while ((!Thread.currentThread().isInterrupted()) && hasSurface) {
 				cameraManager.requestAutoFocus();
 				try {
 					Thread.sleep(4000);

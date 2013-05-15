@@ -1,4 +1,4 @@
-package com.example.myocr.translate;
+package com.myocr.framework.translate;
 
 public class YouDaoConfig {
 	private static final String keyFrom = "zhouyunongBlog";
