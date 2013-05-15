@@ -70,6 +70,7 @@ public class TranslateActivity extends Activity {
 				
 			}
 		});
+		edt_text.setText(translateResult.getQueryString());
 		btn_tran = (Button) findViewById(R.id.btn_tran);
 		handler = new Handler() {
 			public void handleMessage(Message msg) {

@@ -52,9 +52,6 @@ public class RecognisedActivity extends Activity {
 		uperIntent = getIntent();
 				String recogResult = uperIntent.getStringExtra("recogresult");
 		Log.i("recogReslt", recogResult);
-		
-		
-		
 		edt_recognise.setText(recogResult);
 		
 		

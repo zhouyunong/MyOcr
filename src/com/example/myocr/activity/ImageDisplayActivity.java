@@ -4,9 +4,9 @@ import java.io.File;
 
 import com.example.myocr.R;
 import com.example.myocr.recognise.ImageUtils;
+import com.example.myocr.recognise.OCR;
 import com.example.myocr.recognise.OcrUtil;
 import com.example.myocr.translate.BitmapUtil;
-import com.zjgsu.ocr.OCR;
 
 import android.app.Activity;
 import android.content.Intent;

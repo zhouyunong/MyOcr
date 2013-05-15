@@ -37,6 +37,7 @@
                 android:id="@+id/llayout_word_area"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
+                android:background="@drawable/camera_area"
                 android:layout_weight="10" >
             </LinearLayout>
 
@@ -94,14 +95,14 @@
                 android:layout_margin="2dip"
                 style="@style/btn_style"
                 android:text="单词详细" />
-           <Button
+           <!-- <Button
                android:id="@+id/btn_lock_word"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                   style="@style/btn_style"
                 android:layout_margin="2dip"
-                android:text="锁定单词" />
+                android:text="锁定单词" /> -->
         </LinearLayout>
     </LinearLayout>
 

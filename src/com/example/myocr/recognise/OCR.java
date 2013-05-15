@@ -1,4 +1,4 @@
-package com.zjgsu.ocr;
+package com.example.myocr.recognise;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
-import com.zjgsu.utils.Constants;
 
 public class OCR{
 	private static final String TAG = "OCR..."; 

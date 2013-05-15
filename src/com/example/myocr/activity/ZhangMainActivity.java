@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.example.myocr.R;
-import com.zjgsu.ocr.OCR;
-import com.zjgsu.utils.Constants;
+import com.example.myocr.recognise.Constants;
+import com.example.myocr.recognise.OCR;
 
 import android.os.Bundle;
 import android.os.Environment;

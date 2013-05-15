@@ -1,45 +1,93 @@
 <?xml version ="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
     tools:context=".TranslateActivity" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="6"
-        android:background="@color/darkwhite" >
-
-        <ImageView
-            android:id="@+id/img_logo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_height="match_parent"
+        android:background="@color/white"
         android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btn_word_from_camera"
-            style="@style/btn_style"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dip"
-            android:layout_margin="2dip"
-            android:text="摄像头取词" />
+            android:layout_height="wrap_content"
+            android:background="@color/darkwhite"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btn_text_from_image"
-            style="@style/btn_style"
+            <TextView 
+                android:layout_width="match_parent"
+                android:layout_height="50dip"
+                android:gravity="center"
+                android:background="@drawable/note_headbanner"
+                android:text="Ocr识别系统"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
+          
+
+            <ImageView
+                android:id="@+id/img_logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/logo_bg"
+                android:scaleType="matrix" />
+        </LinearLayout>
+
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="50dip"
-            android:layout_margin="2dip"
-            android:text="文本图片识别" />
+            android:layout_height="match_parent"
+            android:layout_marginBottom="2dip"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="vertical"
+            android:stretchColumns="0,1" >
+
+            <TableRow android:layout_weight="5" >
+
+                <Button
+                    android:id="@+id/btn_word_from_camera"
+                    style="@style/btn_style"
+                    android:layout_width="50dip"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dip"
+                    android:text="摄像头取词" />
+
+                <Button
+                    android:id="@+id/btn_translate_straightly"
+                    style="@style/btn_style"
+                    android:layout_width="50dip"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dip"
+                    android:text="单词翻译" />
+            </TableRow>
+
+            <TableRow android:layout_weight="5" >
+
+                <Button
+                    android:id="@+id/btn_text_from_image"
+                    style="@style/btn_style"
+                    android:layout_width="50dip"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dip"
+                    android:text="本地图片识别" />
+
+                <Button
+                    android:id="@+id/btn_camera_recog"
+                    style="@style/btn_style"
+                    android:layout_width="50dip"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dip"
+                    android:text="相机拍照识别" />
+            </TableRow>
+        </TableLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/img_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/welcome"
+        android:visibility="visible" />
+
+</RelativeLayout>

@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,12 +15,20 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.myocr.R;
 
 public class MainActivity extends Activity {
-	private Button btn_word_from_camera, btn_text_from_image;
+	private Button btn_word_from_camera;
+	private Button btn_text_from_image;
+	private Button btn_translate;
+	private Button btn_camera_recog;
+	private ImageView img_welcome;
 	public static final int RESULT_LOAD_IMAGE = 1;
 	public static final int RESULT_CAMERA_IMAGE = 2;
 	private Uri photoUri;
@@ -34,7 +41,70 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.main);
 		btn_word_from_camera = (Button) findViewById(R.id.btn_word_from_camera);
 		btn_text_from_image = (Button) findViewById(R.id.btn_text_from_image);
-		final Builder builder = new AlertDialog.Builder(this);
+		btn_camera_recog = (Button) findViewById(R.id.btn_camera_recog);
+		btn_translate = (Button) findViewById(R.id.btn_translate_straightly);
+		img_welcome = (ImageView)findViewById(R.id.img_welcome);
+		
+		
+		final Animation alphaAnimation = AnimationUtils.loadAnimation(this,
+				R.anim.welcome_alpha);
+		alphaAnimation.setFillAfter(false);
+		img_welcome = (ImageView) findViewById(R.id.img_welcome);
+		alphaAnimation.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				// TODO Auto-generated method stub
+				img_welcome.setVisibility(View.GONE);
+				//img_welcome.invalidate();
+			}
+		});
+		img_welcome.startAnimation(alphaAnimation);
+		
+		
+	//	final Builder builder = new AlertDialog.Builder(this);
+
+		btn_translate.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(MainActivity.this,
+						TranslateActivity.class);
+				startActivity(intent);
+			}
+		});
+
+		btn_camera_recog.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"yyyy_MM_dd_hh_mm_ss");
+				String filaName = dateFormat.format(new Date());
+				ContentValues values = new ContentValues();
+				values.put(Media.TITLE, filaName);
+				photoUri = getContentResolver().insert(
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+				startActivityForResult(intent, RESULT_CAMERA_IMAGE);
+
+			}
+		});
 
 		btn_word_from_camera.setOnClickListener(new View.OnClickListener() {
 
@@ -52,49 +122,10 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 
-				builder.setIcon(R.drawable.ic_launcher);
-				builder.setTitle("选择文本模式");
-				builder.setItems(new String[] { "从相册中选择", "直接拍照" },
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
-								switch (which) {
-								case 0:
-									Intent intent = new Intent(
-											Intent.ACTION_PICK,
-											android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-									startActivityForResult(intent,
-											RESULT_LOAD_IMAGE);
-									break;
-								case 1:
-
-									Intent intent2 = new Intent(
-											MediaStore.ACTION_IMAGE_CAPTURE);
-									SimpleDateFormat dateFormat = new SimpleDateFormat(
-											"yyyy_MM_dd_hh_mm_ss");
-									String filaName = dateFormat
-											.format(new Date());
-									ContentValues values = new ContentValues();
-									values.put(Media.TITLE, filaName);
-									photoUri = getContentResolver()
-											.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-													values);
-									intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-											photoUri);
-									startActivityForResult(intent2,
-											RESULT_CAMERA_IMAGE);
-
-									
-									break;
-
-								}
-							}
-						});
-
-				builder.create().show();
+				Intent intent = new Intent(
+						Intent.ACTION_PICK,
+						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+				startActivityForResult(intent, RESULT_LOAD_IMAGE);
 
 			}
 		});
