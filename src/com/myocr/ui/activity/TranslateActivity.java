@@ -138,8 +138,7 @@ public class TranslateActivity extends Activity {
 	
 	private void drawTranslateResult() {
 		ll_explains.removeAllViews();
-		ll_webexplains.removeAllViews();
-		
+		ll_webexplains.removeAllViews();	
 		tv_result.setText(translateResult.getQueryString());
 		tv_query.setText(translateResult.getTranslation());
 		params = new LayoutParams(

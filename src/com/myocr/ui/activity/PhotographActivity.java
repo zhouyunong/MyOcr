@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import com.example.myocr.R;
-import com.myocr.framework.recognise.OCR;
+import com.myocr.framework.recognise.OcrUtil;
 import com.myocr.framework.recognise.OcrUtil;
 import com.myocr.framework.translate.Basic;
 import com.myocr.framework.translate.TranslateResult;
@@ -77,7 +77,7 @@ public class PhotographActivity extends Activity {
 	private WordScanTask wordScanTask;
 	private AutoFocusCallback autoFocusCallback;
 	private UiHandler uiHandler;
-	private OCR myOcrUtil = new OCR();
+	
 	private AutoFocusThread autoFocusThread;
 
 	private TranslateResult translateResult_this_moment;
@@ -514,7 +514,7 @@ public class PhotographActivity extends Activity {
 			bitmap = Bitmap.createBitmap(bitmap, word_area_location[0],
 					word_area_location[1], word_area_width, word_area_height);
 
-			String ocrString = myOcrUtil.doOcr(bitmap);
+			String ocrString = OcrUtil.doOcr(bitmap);
 			String ocrResult = TranslateUtil.readMidWord(ocrString);
 
 			if (ocrResult != null) {

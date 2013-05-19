@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.example.myocr.R;
 import com.myocr.framework.imageprocessor.ImageUtils;
-import com.myocr.framework.recognise.OCR;
+import com.myocr.framework.recognise.OcrUtil;
 import com.myocr.framework.recognise.OcrUtil;
 import com.myocr.framework.translate.BitmapUtil;
 
@@ -38,7 +38,7 @@ public class ImageDisplayActivity extends Activity {
 	private String img_path;
 	private Intent intent;
 	private String recogniseStr;
-	private OCR ocr;
+
 	private OcrFinishHandler ocrFinishHandler;
 	private static final int ON_OCR_FINISHED = 1;
 
@@ -54,7 +54,7 @@ public class ImageDisplayActivity extends Activity {
 		relative_wait = (RelativeLayout) findViewById(R.id.relative_waiting);
 		ocrFinishHandler = new OcrFinishHandler();
 
-		ocr = new OCR();
+		
 		intent = getIntent();
 		switch (intent.getFlags()) {
 		case MainActivity.RESULT_LOAD_IMAGE:
@@ -193,7 +193,7 @@ public class ImageDisplayActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 
-			recogniseStr = ocr.doOcr(bitmap);
+			recogniseStr = OcrUtil.doOcr(bitmap);
 			Message message = new Message();
 			message.what = ON_OCR_FINISHED;
 			ocrFinishHandler.sendMessage(message);

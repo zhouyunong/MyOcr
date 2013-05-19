@@ -1,79 +1,98 @@
 package com.myocr.framework.recognise;
 
+import java.io.IOException;
+
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.util.Log;
+import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class OcrUtil {
-	public static String doOcr(Bitmap bitmap){
-		return "my name is Kevin Zhou";
-	}
-	
-//	/**
-//	 * 工具类：读取字符串中间的单词  edit by elvira
-//	 * @param str
-//	 * @return
-//	 */
-//	public static String readMidWord(String str) {
-//		if (str == null || str.equals(""))
-//			return null;
-//
-//		Log.i("readMidWord", "readMidWord:" + str);
-//
-//		try {
-//			//把一些特殊字符都改为空格
-//			str = str.replaceAll("[,.-]", " ");
-//			int mid = str.length() / 2;
-//			
-//			//处理中间字符为空格的情况
-//			while (str.charAt(mid) == ' ')
-//				mid--;
-//			
-//			int begin = str.lastIndexOf(" ", mid);
-//			if (begin == -1)
-//				begin = 0;
-//
-//			int end = str.indexOf(" ", mid);
-//			if (end == -1)
-//				end = str.length() - 1;
-//
-//			String result = str.substring(begin, end);
-//			return result;
-//		} catch (Exception e) {
-//			Log.e("readMidWord", e.getMessage());
-//		}
-//		return null;
-//
-//	}
+	private static final String TAG = "OCR...";
+	private static final String DEFAULT_LANGUAGE = "eng";
 
-//	/***
-//	 * 传出灰度化后的图片
-//	 * @param width  输出图片的宽度
-//	 * @param height 输出图片的高度
-//	 * @param top rec相对于上的位置，相对于surfaceView
-//	 * @param left rec相对于左的位置，相对于surfaceView
-//	 * @param dataWidth 相机分辨率的宽度
-//	 * @param yuv 传入的二进制数组
-//	 * @return 灰度化后的图片
-//	 */
-//	 public Bitmap renderCroppedGreyscaleBitmap(int width , int height ,int top , int  left ,int dataWidth, byte[] yuv) {
-//		   
-//		    int[] pixels = new int[width * height];
-//		   
-//		    int inputOffset = top * dataWidth + left;
-//
-//		    for (int y = 0; y < height; y++) {
-//		      int outputOffset = y * width;
-//		      for (int x = 0; x < width; x++) {
-//		       int grey = yuv[inputOffset + x] & 0xff;
-//		        pixels[outputOffset + x] = 0xFF000000 | (grey * 0x00010101);
-//		 
-//		      }
-//		      inputOffset += dataWidth;
-//		    }
-//
-//		    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//		    bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-//		    return bitmap;
-//		  }
-//	
+	public static String doOcr(Bitmap bitmap) {
+		// DATA_PATH = Path to the storage
+		// lang for which the language data exists, usually "eng"
+		try {
+
+			String recognizedText = ocr(bitmap);
+			return recognizedText;
+		} catch (Exception ex) {
+			return ex.getMessage();
+		}
+
+	}
+
+	protected static String ocr(Bitmap bitmap) {
+
+		// BitmapFactory.Options options = new BitmapFactory.Options();
+		// options.inSampleSize = 2;
+		// Bitmap bitmap = BitmapFactory.decodeFile(Constants.IMAGE_PATH,
+		// options);
+
+		try {
+			ExifInterface exif = new ExifInterface(Constants.getImagePath());
+			int exifOrientation = exif.getAttributeInt(
+					ExifInterface.TAG_ORIENTATION,
+					ExifInterface.ORIENTATION_NORMAL);
+
+			Log.v(TAG, "Orient: " + exifOrientation);
+
+			int rotate = 0;
+			switch (exifOrientation) {
+			case ExifInterface.ORIENTATION_ROTATE_90:
+				rotate = 90;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_180:
+				rotate = 180;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_270:
+				rotate = 270;
+				break;
+			}
+
+			Log.v(TAG, "Rotation: " + rotate);
+
+			if (rotate != 0) {
+
+				// Getting width & height of the given image.
+				int w = bitmap.getWidth();
+				int h = bitmap.getHeight();
+
+				// Setting pre rotate
+				Matrix mtx = new Matrix();
+				mtx.preRotate(rotate);
+
+				// Rotating Bitmap
+				bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+
+			}
+			// HACK:以上try部分可以不做
+			// tesseract req. ARGB_8888
+
+			bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+		} catch (IOException e) {
+			Log.e(TAG, "Rotate or coversion failed: " + e.toString());
+		}
+
+		Log.v(TAG, "Before baseApi");
+
+		TessBaseAPI baseApi = new TessBaseAPI();
+		baseApi.setDebug(true);
+		baseApi.init(Constants.getTessPath(), DEFAULT_LANGUAGE);
+		baseApi.setImage(bitmap);
+		String recognizedText = baseApi.getUTF8Text();
+		baseApi.end();
+
+		Log.v(TAG, "OCR Result: " + recognizedText);
+
+		// clean up and show
+		// if (DEFAULT_LANGUAGE.equalsIgnoreCase("eng")) {
+		// recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
+		// }
+		return recognizedText;
+	}
+
 }
