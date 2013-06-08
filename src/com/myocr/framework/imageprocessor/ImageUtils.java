@@ -18,7 +18,7 @@ public class ImageUtils {
 
 	public static final int BLACK     = -16777216; // 黑色
 	public static final int WHITE     = -1;        // 白色
-	public static final int EXPANDNUM = 2;        // 膨胀系数
+	public static final int EXPANDNUM = 18;        // 膨胀系数
 
 	/**
 	 * 将图像灰度化 
@@ -132,6 +132,7 @@ public class ImageUtils {
 	 * Robert算子梯度
 	 */
 	public static Bitmap RobertGradient(Bitmap myBitmap) {
+		myBitmap = myBitmap.copy(Config.ARGB_8888, true);
 		int width  = myBitmap.getWidth();
 		int height = myBitmap.getHeight();
 		// 创建二值化图像
@@ -243,23 +244,20 @@ public class ImageUtils {
 	public static Bitmap expand(Bitmap binaryBitmap) {
 		int width  = binaryBitmap.getWidth();
 		int height = binaryBitmap.getHeight();
-		Bitmap output = binaryBitmap;
+		Bitmap output = Bitmap.createBitmap(binaryBitmap);
 		int nSize = EXPANDNUM / 2;
-
 		//膨胀
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				int pix = binaryBitmap.getPixel(i, j); // 从二值化数据取出数据
-//				int flag = 1;
 				if (pix == BLACK) {
 					for (int k = i - nSize; k <= i + nSize; k++) {
 						for (int m = j - nSize; m <= j + nSize; m++) {
 							if (k < 0 || k >= width || m < 0 || m >= height)
-								break;
+								continue;
 							if (output.getPixel(k, m) == BLACK)
 								continue;
 							output.setPixel(k, m, BLACK);
-//							flag = 0;
 						}
 					}
 				}
@@ -358,11 +356,12 @@ public class ImageUtils {
        int width  = binaryBitmap.getWidth();
        int height = binaryBitmap.getHeight();
        //压缩
-//       Bitmap output = Bitmap.createBitmap(compression(binaryBitmap));
+       Bitmap output = compression(binaryBitmap);
 		//膨胀
-       Bitmap output = expand(binaryBitmap);
+       output = expand(output);
+//       output = output.copy(Config.ARGB_8888, false);
 		//边缘检测
-//		output = RobertGradient(output);
+       output = RobertGradient(output);
 //		//计算角度
 //		int ratate = calRatate(output);
 //		//旋转

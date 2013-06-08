@@ -64,7 +64,7 @@
                 android:layout_marginTop="10dip"
                 android:layout_weight="3"
                 android:gravity="center"
-               
+              
                 android:textColor="@color/sky_blue"
                 android:textSize="30sp" />
 
@@ -93,7 +93,7 @@
                 android:layout_weight="2"
               
                 android:layout_margin="2dip"
-                style="@style/btn_style"
+                style="@style/btn_style_main"
                 android:text="单词详细" />
            <!-- <Button
                android:id="@+id/btn_lock_word"

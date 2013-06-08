@@ -7,5 +7,6 @@
     <dimen name="Button_TextSize">16sp</dimen>
     <dimen name="Textview_left_margin">10dp</dimen>
     <dimen name="image_btn_margintop">2dp</dimen>
+    <dimen name="shop_logo_margin">1dp</dimen>
 
 </resources>

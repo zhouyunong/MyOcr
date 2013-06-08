@@ -41,7 +41,7 @@
                 android:id="@+id/btn_recognise"
                 android:layout_width="match_parent"
                 android:layout_height="60dip"
-                style="@style/btn_style"
+                style="@style/btn_style_main"
                 android:text="开始识别" />
         </LinearLayout>
     </LinearLayout>

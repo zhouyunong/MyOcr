@@ -98,6 +98,7 @@ public class PhotographActivity extends Activity {
 		tv_translated_word = (TextView) findViewById(R.id.tv_translated_word);
 		// btn_lock_word = (Button) findViewById(R.id.btn_lock_word);
 		btn_word_detail = (Button) findViewById(R.id.btn_word_details);
+		Toast.makeText(this, "对准键盘试试？", Toast.LENGTH_LONG).show();
 		autoFocusThread = new AutoFocusThread();
 
 		llayout_word_area = (LinearLayout) findViewById(R.id.llayout_word_area);
@@ -630,25 +631,10 @@ public class PhotographActivity extends Activity {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-			// cameraManager.camera.autoFocus();
-
-			// TODO Auto-generated method stub
-
-			// try {
-			// synchronized (this) {
-			// if (waiting) {
-			// this.wait();
-			// }
-			// }
-			// } catch (Exception e) {
-			// // TODO: handle exception
-			// }
-
 			while ((!Thread.currentThread().isInterrupted()) && hasSurface) {
 				cameraManager.requestAutoFocus();
 				try {
-					Thread.sleep(4000);
+					Thread.sleep(4500);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

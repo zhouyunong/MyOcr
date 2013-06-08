@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -22,8 +23,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.myocr.R;
+import com.myocr.framework.recognise.Constants;
+import com.myocr.framework.translate.StreamUtil;
 
 public class MainActivity extends Activity {
+
 	private Button btn_word_from_camera;
 	private Button btn_text_from_image;
 	private Button btn_translate;
@@ -43,9 +47,7 @@ public class MainActivity extends Activity {
 		btn_text_from_image = (Button) findViewById(R.id.btn_text_from_image);
 		btn_camera_recog = (Button) findViewById(R.id.btn_camera_recog);
 		btn_translate = (Button) findViewById(R.id.btn_translate_straightly);
-		img_welcome = (ImageView)findViewById(R.id.img_welcome);
-		
-		
+		img_welcome = (ImageView) findViewById(R.id.img_welcome);
 		final Animation alphaAnimation = AnimationUtils.loadAnimation(this,
 				R.anim.welcome_alpha);
 		alphaAnimation.setFillAfter(false);
@@ -55,7 +57,11 @@ public class MainActivity extends Activity {
 			@Override
 			public void onAnimationStart(Animation animation) {
 				// TODO Auto-generated method stub
-
+				StreamUtil
+						.CreateTesseractTradedData(MainActivity.this,
+								Constants.getTessDataPath(),
+								Constants.TESSDATA_NAME_EN);
+				Log.i("Tesscopy", "copy执行了");
 			}
 
 			@Override
@@ -68,13 +74,12 @@ public class MainActivity extends Activity {
 			public void onAnimationEnd(Animation animation) {
 				// TODO Auto-generated method stub
 				img_welcome.setVisibility(View.GONE);
-				//img_welcome.invalidate();
+				// img_welcome.invalidate();
 			}
 		});
 		img_welcome.startAnimation(alphaAnimation);
-		
-		
-	//	final Builder builder = new AlertDialog.Builder(this);
+
+		// final Builder builder = new AlertDialog.Builder(this);
 
 		btn_translate.setOnClickListener(new View.OnClickListener() {
 

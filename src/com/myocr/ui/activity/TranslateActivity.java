@@ -35,6 +35,8 @@ public class TranslateActivity extends Activity {
 	private Intent uper_intent;
 	private TranslateResult translateResult = new TranslateResult();
 
+	private boolean isWebTranslationShown = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,7 +47,7 @@ public class TranslateActivity extends Activity {
 		tv_result = (TextView) findViewById(R.id.tv_result);
 		ll_explains = (LinearLayout) findViewById(R.id.ll_explains);
 		ll_webexplains = (LinearLayout) findViewById(R.id.ll_webexplains);
-		btn_webTranslation = (Button)findViewById(R.id.btn_webTranslation);
+		btn_webTranslation = (Button) findViewById(R.id.btn_webTranslation);
 		uper_intent = getIntent();
 		if (uper_intent != null) {
 
@@ -58,16 +60,13 @@ public class TranslateActivity extends Activity {
 
 		}
 
-		
-		
 		btn_webTranslation.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				showWebTranslation();	
-				
-				
+				showWebTranslation();
+
 			}
 		});
 		edt_text.setText(translateResult.getQueryString());
@@ -76,11 +75,11 @@ public class TranslateActivity extends Activity {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case 1:
-					
+
 					translateResult = (TranslateResult) msg.getData()
-					.getSerializable("result");
-					 drawTranslateResult();
-					
+							.getSerializable("result");
+					drawTranslateResult();
+
 				}
 			}
 
@@ -135,48 +134,49 @@ public class TranslateActivity extends Activity {
 		}
 	}
 
-	
 	private void drawTranslateResult() {
 		ll_explains.removeAllViews();
-		ll_webexplains.removeAllViews();	
+		ll_webexplains.removeAllViews();
 		tv_result.setText(translateResult.getQueryString());
 		tv_query.setText(translateResult.getTranslation());
-		params = new LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT,
+		params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 		for (String item : translateResult.getBasicExplain().getExplains()) {
 			TextView textView = new TextView(TranslateActivity.this);
 			textView.setTextColor(getResources().getColor(R.color.deep_gray));
 			textView.setText(item);
-			
+
 			ll_explains.addView(textView, params);
 		}
 
-		
 		ll_explains.requestLayout();
 	}
 
 	private void showWebTranslation() {
-		for (WebTranslation webTranslation : translateResult
-				.getWebTranslation()) {
 
-			TextView tv_key = new TextView(TranslateActivity.this);
-			tv_key.setTextColor(getResources().getColor(R.color.black));
-			tv_key.setText(webTranslation.getKey());
-			StringBuilder builder = new StringBuilder();
-			for (String value : webTranslation.getValues()) {
-				builder.append(value + "; ");
+		if (!isWebTranslationShown) {
+			for (WebTranslation webTranslation : translateResult
+					.getWebTranslation()) {
+				TextView tv_key = new TextView(TranslateActivity.this);
+				tv_key.setTextColor(getResources().getColor(R.color.black));
+				tv_key.setText(webTranslation.getKey());
+				StringBuilder builder = new StringBuilder();
+				for (String value : webTranslation.getValues()) {
+					builder.append(value + "; ");
+				}
+				String valueString = builder.toString();
+				Log.i("zhou", valueString);
+				TextView tv_values = new TextView(TranslateActivity.this);
+				tv_values.setTextColor(getResources().getColor(
+						R.color.deep_gray));
+				tv_values.setText(valueString);
+
+				ll_webexplains.addView(tv_key, params);
+				ll_webexplains.addView(tv_values, params);
+				ll_webexplains.invalidate();
+				isWebTranslationShown = true;
 			}
-			String valueString = builder.toString();
-			Log.i("zhou", valueString);
-			TextView tv_values = new TextView(
-					TranslateActivity.this);
-			tv_values.setTextColor(getResources().getColor(R.color.deep_gray));
-			tv_values.setText(valueString);
-		
-			ll_webexplains.addView(tv_key, params);
-			ll_webexplains.addView(tv_values, params);
-			ll_webexplains.invalidate();
 		}
+
 	}
 }

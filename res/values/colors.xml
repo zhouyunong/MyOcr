@@ -14,11 +14,12 @@
     <color name="note_back">#f6f6f6</color>
     <color name="note_btn_text_color">#666666</color>
     <color name="about_textcolor">#3b6688</color>
+    <color name="main_bg_color">#4ec4ea</color>
     <color name="shop_info_text_left">#3b6688</color>
     <color name="alpha_black_bg">#55000000</color>
     <color name="darkwhite">#f5f0f0</color>
     <color name="alpha_red">#bbc71d10</color>
-    <color name="alpha_deep_blue">#bb027bad</color>
+    <color name="alpha_deep_blue">#aa027bad</color>
     <color name="deep_blue">#027bad</color>
     <color name="alpah_orange">#88fcae51</color>
     <color name="sky_blue">#00a9eb</color>

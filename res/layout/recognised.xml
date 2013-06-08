@@ -38,10 +38,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dip"
                     android:gravity="center_vertical|right"
                     android:text="识别结果全屏"
-                    android:textColor="@color/deep_blue"
-                    android:layout_marginRight="15dip" />
+                    android:textColor="@color/deep_blue" />
             </RelativeLayout>
 
             <EditText
@@ -63,10 +63,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="5dip"
             android:id="@+id/llayout_translate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dip"
             android:layout_weight="5"
             android:orientation="vertical" >
 
@@ -87,10 +87,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dip"
                     android:gravity="center_vertical|right"
                     android:text="翻译结果全屏"
-                    android:textColor="@color/deep_blue"
-                    android:layout_marginRight="15dip" />
+                    android:textColor="@color/deep_blue" />
             </RelativeLayout>
 
             <EditText
@@ -115,10 +115,9 @@
 
             <Button
                 android:id="@+id/btn_translate"
+                style="@style/btn_style"
                 android:layout_width="match_parent"
                 android:layout_height="50dip"
-                
-                style="@style/btn_style"
                 android:text="翻译" />
         </LinearLayout>
     </LinearLayout>

@@ -55,7 +55,7 @@ public class ImageDisplayActivity extends Activity {
 		ocrFinishHandler = new OcrFinishHandler();
 
 		
-		intent = getIntent();
+		 intent = getIntent();
 		switch (intent.getFlags()) {
 		case MainActivity.RESULT_LOAD_IMAGE:
 			img_path = intent.getStringExtra("img_path");
@@ -111,7 +111,7 @@ public class ImageDisplayActivity extends Activity {
 		// TODO Auto-generated method stub
 		menu.add(0, 0, 0, "灰度化");
 		menu.add(0, 1, 1, "二值化");
-		menu.add(0, 2, 2, "倾斜校正");
+	//	menu.add(0, 2, 2, "倾斜校正");
 
 		return true;
 	}

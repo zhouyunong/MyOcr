@@ -41,5 +41,9 @@
         <item name="android:textSize">15sp</item>
         <item name="android:gravity">left</item>
     </style>
+    
+     <style name="Shop_Style" >
+        <item name="android:background">@drawable/selector_btn_background</item>
+    </style>
 
 </resources>
